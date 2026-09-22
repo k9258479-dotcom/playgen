@@ -37,29 +37,136 @@ export const LinkGenerator: React.FC<Props> = ({ config, onUpdateConfig, onTrigg
   });
   const generatedSingleLink = `${currentOrigin}/?${queryParams.toString()}`;
 
-  // Generate pure standalone HTML code for redirect file
+  // Generate pure standalone HTML code for redirect file showing authentic SMDC layout
   const standaloneHtmlCode = `<!DOCTYPE html>
-<html lang="tl">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Browser Redirect: SMDC to Y8</title>
+  <title>SMDC - The Good Guys | SM Development Corporation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: system-ui, sans-serif; background: #020617; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
-    .box { background: #0f172a; border: 1px solid #1e293b; padding: 2rem; border-radius: 1rem; max-width: 460px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
-    .timer { font-size: 2rem; font-weight: bold; color: #fbbf24; margin: 1rem 0; font-family: monospace; }
-    .url { color: #38bdf8; word-break: break-all; font-size: 0.9rem; }
-    .btn { background: #0284c7; color: white; padding: 0.6rem 1.2rem; border-radius: 0.5rem; text-decoration: none; display: inline-block; margin-top: 1rem; font-weight: 600; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #001733; color: #ffffff; min-height: 100vh; display: flex; flex-direction: column; }
+    
+    /* Sticky Top Notification Bar */
+    .redirect-bar {
+      position: sticky; top: 0; z-index: 9999;
+      background: #090d16; border-bottom: 2px solid #f59e0b;
+      padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5); font-size: 13px;
+    }
+    .redirect-info { display: flex; align-items: center; gap: 10px; }
+    .timer-pill { background: #1e293b; color: #fbbf24; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-family: monospace; border: 1px solid #d97706; }
+    .dest-btn { background: #10b981; color: #022c22; text-decoration: none; font-weight: bold; padding: 6px 12px; border-radius: 6px; font-size: 12px; }
+
+    /* SMDC Header */
+    .smdc-header { background: #002244; border-bottom: 1px solid #1e3a8a; }
+    .smdc-topbar { padding: 6px 24px; font-size: 11px; color: #93c5fd; display: flex; justify-content: space-between; border-bottom: 1px solid #0f2d59; }
+    .smdc-nav { max-width: 1200px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .logo-box { display: flex; align-items: center; gap: 12px; }
+    .logo-badge { background: #f59e0b; color: #002244; font-weight: 900; font-size: 22px; padding: 2px 10px; border-radius: 4px; letter-spacing: -1px; }
+    .logo-text { border-left: 1px solid #1e40af; padding-left: 12px; }
+    .logo-tag { font-size: 13px; font-weight: 700; letter-spacing: 1px; color: white; display: block; }
+    .logo-sub { font-size: 10px; color: #93c5fd; display: block; }
+    .nav-links { display: flex; gap: 20px; font-size: 13px; font-weight: 500; }
+    .nav-links a { color: #e2e8f0; text-decoration: none; }
+    .inquire-btn { background: #f59e0b; color: #0f172a; font-weight: bold; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+
+    /* SMDC Hero */
+    .smdc-hero { padding: 48px 24px; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 40px; align-items: center; }
+    .hero-tag { display: inline-block; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 12px; border-radius: 50px; font-size: 11px; margin-bottom: 16px; }
+    .hero-title { font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+    .hero-title span { color: #f59e0b; }
+    .hero-desc { font-size: 14px; color: #cbd5e1; line-height: 1.6; margin-bottom: 24px; }
+    
+    /* Search Box */
+    .search-card { background: #002244; border: 1px solid #1e3a8a; padding: 18px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+    .search-card select, .search-card button { padding: 10px; border-radius: 6px; border: 1px solid #1e3a8a; background: #001733; color: white; font-size: 12px; }
+    .search-card button { background: #f59e0b; color: #020617; font-weight: bold; border: none; cursor: pointer; }
+
+    /* Condo Card */
+    .condo-card { background: linear-gradient(180deg, #002d5e 0%, #001b38 100%); border: 1px solid #2563eb; border-radius: 16px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .condo-preview { height: 180px; background: linear-gradient(135deg, #0f172a, #1e3a8a); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: flex-end; margin-bottom: 16px; }
+
+    /* Footer */
+    .smdc-footer { margin-top: auto; background: #001024; border-top: 1px solid #0f2d59; padding: 20px; text-align: center; font-size: 11px; color: #64748b; }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h2>1-Link Browser Automator</h2>
-    <p>1. Binuksan ang: <span class="url">${config.startUrl}</span></p>
-    <p>2. Naghihintay ng eksaktong <strong>${config.waitDurationMs}ms (1 segundo)</strong>...</p>
-    <div class="timer" id="countdown">${config.waitDurationMs}ms</div>
-    <p>3. Lilipat sa: <span class="url">${config.destUrl}</span></p>
+
+  <!-- Top Sticky Automation Status -->
+  <div class="redirect-bar">
+    <div class="redirect-info">
+      <strong>SMDC Site Nakabukas</strong>
+      <span>•</span>
+      <span>Awtomatikong lilipat sa <b style="color: #34d399;">${config.destUrl}</b> pagkatapos ng 1 segundo:</span>
+      <span class="timer-pill" id="countdown">${config.waitDurationMs}ms</span>
+    </div>
+    <a href="${config.destUrl}" class="dest-btn">Buksan agad ang Y8 &rarr;</a>
   </div>
+
+  <!-- SMDC Official Header -->
+  <header class="smdc-header">
+    <div class="smdc-topbar">
+      <span>Hotline: +63 (2) 8858-0300 &bull; SM Prime Real Estate Developer</span>
+      <span>Official Portal &bull; Buyer's Guide</span>
+    </div>
+    <div class="smdc-nav">
+      <div class="logo-box">
+        <div class="logo-badge">SMDC</div>
+        <div class="logo-text">
+          <span class="logo-tag">THE GOOD GUYS</span>
+          <span class="logo-sub">SM Development Corporation</span>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="#">Properties</a>
+        <a href="#">Locations</a>
+        <a href="#">Promos</a>
+        <a href="#">360° Tours</a>
+      </nav>
+      <button class="inquire-btn">Inquire Now</button>
+    </div>
+  </header>
+
+  <!-- SMDC Hero Section -->
+  <main class="smdc-hero">
+    <div>
+      <span class="hero-tag">&#10024; Premier Resort-Style Living</span>
+      <h1 class="hero-title">Step Into Your Dream Home with <span>SMDC</span></h1>
+      <p class="hero-desc">
+        Experience integrated communities with masterplanned luxury residences, lush landscaping, and direct access to SM Malls across Metro Manila and key provinces.
+      </p>
+
+      <div class="search-card">
+        <div style="font-weight: 600; font-size: 12px; margin-bottom: 10px; color: #e2e8f0;">Maghanap ng SMDC Condominium</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px;">
+          <select><option>Mall of Asia Complex, Pasay</option><option>Makati City</option><option>Quezon City</option></select>
+          <select><option>Pre-Selling Condos</option><option>Ready For Occupancy (RFO)</option></select>
+          <button>Search</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="condo-card">
+        <div class="condo-preview">
+          <div style="background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 4px; font-size: 10px; color: #fbbf24; width: fit-content; margin-bottom: 6px;">Featured Property</div>
+          <h3 style="font-size: 20px; font-weight: bold;">Sail Residences</h3>
+          <p style="font-size: 11px; color: #94a3b8;">Mall of Asia Complex, Pasay City</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: #cbd5e1;">
+          <span>Starts at <b>&#8369;18,500/month</b></span>
+          <span style="color: #38bdf8;">View Details &rarr;</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="smdc-footer">
+    &copy; 2026 SM Development Corporation (SMDC). All rights reserved. Redirecting to Y8...
+  </footer>
+
   <script>
     let remaining = ${config.waitDurationMs};
     const timerElem = document.getElementById('countdown');
@@ -67,8 +174,8 @@ export const LinkGenerator: React.FC<Props> = ({ config, onUpdateConfig, onTrigg
       remaining -= 50;
       if (remaining <= 0) {
         clearInterval(interval);
-        timerElem.innerText = "Redirecting now...";
-        // Awtomatikong lilipat sa Y8.com
+        timerElem.innerText = "0ms - Lilipat na...";
+        // Awtomatikong lilipat sa parehong tab patungo sa Y8.com
         window.location.replace("${config.destUrl}");
       } else {
         timerElem.innerText = remaining + "ms";
@@ -133,7 +240,7 @@ export const LinkGenerator: React.FC<Props> = ({ config, onUpdateConfig, onTrigg
             </h3>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Sa pamamagitan ng nag-iisang link na ito, kapag binuksan sa browser ay kusa nitong susundin ang daloy: bubuksan ang SMDC, magbibilang ng 1 segundo, at awtomatikong lilipat sa Y8.
+            Sa pamamagitan ng nag-iisang link na ito, kapag binuksan sa browser ay <strong className="text-amber-300">makikita muna ang buong SMDC website</strong> (header, logo, search bar, at condo properties), magbibilang nang eksaktong 1 segundo, at awtomatikong lilipat sa Y8.
           </p>
         </div>
 
@@ -208,7 +315,7 @@ export const LinkGenerator: React.FC<Props> = ({ config, onUpdateConfig, onTrigg
             <span className="text-[10px] bg-cyan-950 text-cyan-300 px-1.5 py-0.5 rounded font-mono">0ms</span>
           </div>
           <p className="text-slate-400 text-[11px] leading-relaxed">
-            Bubuksan ang browser tab at maglo-load ang unang website ({config.startUrl.replace('https://', '')}).
+            Lalabas agad sa buong screen ang opisyal na SMDC website (navy blue header, "The Good Guys", at luxury condos).
           </p>
         </div>
 
