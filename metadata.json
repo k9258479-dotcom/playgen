@@ -1,0 +1,6 @@
+{
+  "name": "Playwright Browser Automator",
+  "description": "Interactive Python Playwright and Selenium script generator with step-by-step installation guides and live simulation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
